@@ -48,7 +48,7 @@ def determine_attribute_constraints(env, device, context):
     if last_login_time:
         # Calculate time since last login in hours
         from datetime import datetime
-        time_since_last_login = (datetime.now()) - datetime.fromisoformat(last_login_time[:-1]).total_seconds() / 3600
+        time_since_last_login = (datetime.now() - datetime.fromisoformat(last_login_time[:-1])).total_seconds() / 3600
 
         if time_since_last_login < 1:
             intrusiveness_threshold = (0, 2)  # Lower intrusiveness shortly after logging in
@@ -90,13 +90,7 @@ def evaluate_and_select_factors(json_file, factor_modules):
     context = data['context']
     factors = load_and_evaluate_factors(factor_modules, environment, device, context)
 
-    # Example attribute constraints
-    attribute_constraints = {
-        'Security': (0, 10),
-        'Intrusiveness': (0, 5),
-        'Privacy': (0, 10),
-        'Accuracy': (0,10)
-    }
+    attribute_constraints = determine_attribute_constraints(environment,device,context)
 
     # Use the SAT solver function to find valid factor combinations
     return find_factors(factors, attribute_constraints)
