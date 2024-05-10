@@ -1,0 +1,42 @@
+
+{
+    "environment": {
+        "location": "office",
+        "network_type": "wired",
+        "vpn_enabled": true,
+        "public_wifi": false,
+        "time_of_day": "afternoon",
+        "recent_security_alerts": false
+    },
+    "device": {
+        "ip_address": "192.168.1.105",
+        "battery_status": "charging",
+        "battery_percentage": 88,
+        "screen_frame_resolution": "1920x1080",
+        "screen_color_depth": 24,
+        "hardware_concurrency": 8,
+        "timezone": "UTC+01:00",
+        "dns_resolver": "8.8.8.8",
+        "clock_skew_ms": 30,
+        "network_flow_statistics": {
+            "inbound_bandwidth": "50Mbps",
+            "outbound_bandwidth": "20Mbps",
+            "packet_loss_rate": "0.2%",
+            "latency_ms": 15
+        }
+    },
+    "context": {
+        "user_logged_in": true,
+        "recent_failed_attempts": 1,
+        "device_usage": {
+            "last_login_time": "2024-05-09T14:30:00Z",
+            "app_usage": ["browser", "email_client", "office_suite", "battery_saver", "multi-threaded_apps"]
+        },
+        "historical_info": {
+            "prev_screen_resolutions" : ["1920x1080"]
+        },
+        "historical_timezones": ["UTC+01:00", "UTC+02:00"],
+        "recent_travel": true,
+        "consent": true
+    }
+}
