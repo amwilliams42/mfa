@@ -1,6 +1,4 @@
-Sure! Here is the code for the `README.md` file in Markdown format:
 
-```markdown
 # Authentication Modality Selection Project
 
 This project implements a dynamic authentication modality selection algorithm. It evaluates various authentication modalities based on environment, device, and context data, then uses a SAT solver to determine the best combination of modalities that satisfy given attribute constraints.
@@ -22,9 +20,7 @@ This project implements a dynamic authentication modality selection algorithm. I
 The primary goal of this project is to enhance security and user experience by dynamically selecting the best set of authentication modalities. The selection is based on real-time evaluations of environment, device, and context data. The project leverages Python's SAT solver to ensure that the selected modalities meet specified security, intrusiveness, privacy, and accuracy constraints.
 
 ## Project Structure
-
-```
-.
+```bash
 ├── modalities
 │   ├── __init__.py
 │   ├── ip_address.py
@@ -36,18 +32,18 @@ The primary goal of this project is to enhance security and user experience by d
 │   ├── hardware_concurrency.py
 │   ├── timezone.py
 │   ├── network_flow_statistics.py
-│   └── sat.py
+│   └── ...
 ├── environment_device_context.json
 ├── evaluate_and_select_modalities.py
+├── sat.py
 └── README.md
 ```
-
 ## Setup
 
 1. **Clone the Repository**:
     ```bash
-    git clone https://github.com/your-username/authentication-modality-selection.git
-    cd authentication-modality-selection
+    git clone https://github.com/amwilliams42/mfa.git
+    cd mfa
     ```
 
 2. **Install Dependencies**:
