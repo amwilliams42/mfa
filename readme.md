@@ -9,11 +9,10 @@ This project implements a dynamic authentication modality selection algorithm. I
 2. [Project Structure](#project-structure)
 3. [Setup](#setup)
 4. [Usage](#usage)
-5. [Modality Evaluation Functions](#modality-evaluation-functions)
-6. [Dynamic Attribute Constraints](#dynamic-attribute-constraints)
+5. [Authentication Factors](#authentication-factors)
+6. [Attribute Constraints](#attribute-constraints)
 7. [Example JSON File](#example-json-file)
-8. [Contributing](#contributing)
-9. [License](#license)
+
 
 ## Overview
 
@@ -52,33 +51,63 @@ The primary goal of this project is to enhance security and user experience by d
     pip install python-sat
     ```
 
+3. **Prepare the factor and attribute constraints**:
+See the relevant sections [Authentication Factors](#authentication-factors)  and [Attribute Constraints](#attribute-constraints)
+
 ## Usage
 
 1. **Prepare the JSON File**:
     Create or update the `environment_device_context.json` file with relevant environment, device, and context data.
 
 2. **Run the Evaluation and Selection**:
-    Execute the main script to evaluate modalities and determine the best combination:
-    ```bash
-    python evaluate_and_select_modalities.py
+    To run the selection algorithm, simply add all of the factors you would like considered, feed in a function to determine attribute constraints, and let the solver go. 
+    ```python
+    if __name__ == '__main__':
+    # Example factor modules
+    factor_modules = ['facial_recognition', 
+                      'fingerprint', 
+                      'password', 
+                      ...]
+
+    # Run the evaluation and selection process
+    solutions = evaluate_and_select_factors("variables.json", factor_modules, determine_attribute_constraints)
+    print("Solutions:", solutions)
     ```
 
-## Modality Evaluation Functions
+## Authentication Factors
 
-Each authentication modality has its own evaluation function located in the `modalities` subfolder. These functions take environment, device, and context data as input and return a dictionary of attributes:
+A factor is represented by a file in the `factors` subfolder. They are required to implement a function called `evaluate` that takes environemtn, device, and context data as input and returns a dictionary of attribute values. Adding a new factor is as simple as adding a new file to the `factors` folder and implementing this evaluate function. Then add the factor to the dict of considered factors. 
 
 ### Example: IP Address Evaluation
 
 **File**: `modalities/ip_address.py`
 ```python
+# new_modality.py
+
 def evaluate(env, device, context):
-    # Function implementation...
+    # Initialize default attribute values
+    security = 5
+    intrusiveness = 3
+    privacy = 5
+    accuracy = 7
+
+    # Implement logic to evaluate attributes based on input data
+    # Example: Adjust security based on environment
+    if env.get('network_type') == 'wired':
+        security += 2
+
+    return {
+        'Security': max(1, security),
+        'Intrusiveness': intrusiveness,
+        'Privacy': max(1, privacy),
+        'Accuracy': accuracy
+    }
+
 ```
 
-## Dynamic Attribute Constraints
+## Attribute Constraints
 
-The dynamic constraints function adjusts the thresholds for security, intrusiveness, privacy, and accuracy based on real-time context data:
-
+In order to dynamically assign constraints to the system, you must provide a constraint function that takes in the environment, device, and context data, and returns a dict of each of the attributes you are considering and a corresponding tuple with (min, max) constraints. The values must be integers.
 ```python
 def determine_attribute_constraints(env, device, context):
     # Function implementation...
@@ -86,7 +115,7 @@ def determine_attribute_constraints(env, device, context):
 
 ## Example JSON File
 
-Here is an example JSON file that provides the necessary environment, device, and context data:
+Here is an example JSON file that provides the necessary environment, device, and context data. Note that the JSON file contains 3 main parent entries, environment, device, and context information. The intention is that this data is collected using a dynamic process prior to running the algorithm
 
 ```json
 {

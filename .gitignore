@@ -2,5 +2,5 @@
 bin/*
 lib/*
 pyvenv.cfg
-*/__pycache__/*
-
+__pycache__/*
+factors/__pycache__/*
