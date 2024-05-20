@@ -3,6 +3,8 @@ from pysat.solvers import Solver
 import json
 
 def solve_with_constraints(factors, constraints):
+    print(f"factors: {factors}")
+    print(f"constraints: {constraints}")
     # Create a new CNF formula
     formula = CNF()
 
@@ -23,7 +25,9 @@ def solve_with_constraints(factors, constraints):
 
         # Parse condition and implication expressions
         condition_clauses = parse_expression(condition, factors, variables)
+        print(f"cond clause {condition_clauses}")
         implication_clauses = parse_expression(implication, factors, variables)
+        print(f"impl clause {implication_clauses}")
 
         # Add clauses to the formula
         for clause in condition_clauses:
@@ -31,7 +35,7 @@ def solve_with_constraints(factors, constraints):
         for clause in implication_clauses:
             formula.append(clause)
 
-    print(formula)
+    print(f"formula: {formula}")
 
     # Create a solver instance and add the CNF formula
     solver = Solver(bootstrap_with=formula.clauses)
@@ -40,8 +44,8 @@ def solve_with_constraints(factors, constraints):
     if solver.solve():
         model = solver.get_model()
         selected_factors = [factor for factor, variable in variables.items() if variable in model]
-        print(selected_factors)
-        print(model)
+        # print(selected_factors)
+        # print(model)
         return selected_factors
     else:
         return None
@@ -52,9 +56,12 @@ def parse_expression(expr, factors, variables):
         conditions = expr.split("and")
         for condition in conditions:
             parts = condition.strip().split()
+            # print(f"parts: {parts}")
             score_type = parts[0]
             operator = parts[1]
             value = int(parts[2])
+            print(f"part2: {value}")
+            # print(f"value {value}")
 
             for factor, scores in factors.items():
                 if score_type in scores:
@@ -62,11 +69,13 @@ def parse_expression(expr, factors, variables):
                     variable = variables[factor]
                     if operator == ">":
                         if score <= value:
+                            # print("I'm here")
                             clauses.append([-variable])
-                    elif operator == "<":
+                    elif operator == "<=":
                         if score >= value:
-                            clauses.append([-variable])
-    print(clauses)
+                            clauses.append([variable])
+                # print(f" variables: {variables}")
+    # print(f"clauses: {clauses}")
     return clauses
 
 def run_test_case(factors, constraints, expected_result):
