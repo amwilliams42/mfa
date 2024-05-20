@@ -1,0 +1,12 @@
+{
+    "constraints": [
+      {
+        "condition": "P > 2 and A > 2",
+        "implication": "I > 1"
+      },
+      {
+        "condition": "I < 3",
+        "implication": "A > 4"
+      }
+    ]
+  }

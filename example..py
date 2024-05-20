@@ -1,74 +1,91 @@
-from mfa import evaluate_and_select_factors
+from pysat.formula import CNF
+from pysat.solvers import Solver
+import json
 
+def solve_with_constraints(factors, constraints):
+    # Create a new CNF formula
+    formula = CNF()
 
-def determine_attribute_constraints(env, device, context):
-    """
-    Determine dynamic attribute constraints based on environment, device, and context data.
+    # Define Boolean variables for each authentication factor
+    variables = {}
+    for i, factor in enumerate(factors, start=1):
+        variables[factor] = i
 
-    Args:
-    - env (dict): Environment data.
-    - device (dict): Device data.
-    - context (dict): Context data (e.g., security rating of request, last login time).
+    print(variables)
 
-    Returns:
-    - dict: Attribute constraints dynamically determined based on input variables.
-    """
-    # Default thresholds (used as base values)
-    security_threshold = (6, 10)
-    intrusiveness_threshold = (0, 5)
-    privacy_threshold = (5, 10)
-    accuracy_threshold = (6, 10)
+    # Add clauses to the formula based on the dynamic constraints
+    for constraint in constraints:
+  
+        condition = constraint["condition"]
+        implication = constraint["implication"]
+        print(f"cond {condition}")
+        print(f"impl {implication}")
 
-    # Retrieve contextual data
-    last_login_time = context.get('device_usage', {}).get('last_login_time')
-    recent_failed_attempts = context.get('recent_failed_attempts', 0)
-    request_security_rating = context.get('request_security_rating', 'medium')
+        # Parse condition and implication expressions
+        condition_clauses = parse_expression(condition, factors, variables)
+        implication_clauses = parse_expression(implication, factors, variables)
 
-    # Adjust constraints dynamically
-    # Security constraints
-    if recent_failed_attempts > 2:
-        security_threshold = (8, 10)  # Require higher security due to recent failed attempts
+        # Add clauses to the formula
+        for clause in condition_clauses:
+            formula.append(clause)
+        for clause in implication_clauses:
+            formula.append(clause)
 
-    if request_security_rating == 'high':
-        security_threshold = (8, 10)
-        privacy_threshold = (7, 10)
+    print(formula)
 
-    # Adjust intrusiveness constraints based on time since the last login
-    if last_login_time:
-        # Calculate time since last login in hours
-        from datetime import datetime
-        time_since_last_login = (datetime.now() - datetime.fromisoformat(last_login_time[:-1])).total_seconds() / 3600
+    # Create a solver instance and add the CNF formula
+    solver = Solver(bootstrap_with=formula.clauses)
 
-        if time_since_last_login < 1:
-            intrusiveness_threshold = (0, 2)  # Lower intrusiveness shortly after logging in
-        else:
-            intrusiveness_threshold = (0, 4)
+    # Solve the SAT problem
+    if solver.solve():
+        model = solver.get_model()
+        selected_factors = [factor for factor, variable in variables.items() if variable in model]
+        print(selected_factors)
+        print(model)
+        return selected_factors
+    else:
+        return None
+    
+def parse_expression(expr, factors, variables):
+    clauses = []
+    if expr:
+        conditions = expr.split("and")
+        for condition in conditions:
+            parts = condition.strip().split()
+            score_type = parts[0]
+            operator = parts[1]
+            value = int(parts[2])
 
-    # Adjust accuracy thresholds if security rating is high
-    if request_security_rating == 'high':
-        accuracy_threshold = (8, 10)
+            for factor, scores in factors.items():
+                if score_type in scores:
+                    score = scores[score_type]
+                    variable = variables[factor]
+                    if operator == ">":
+                        if score <= value:
+                            clauses.append([-variable])
+                    elif operator == "<":
+                        if score >= value:
+                            clauses.append([-variable])
+    print(clauses)
+    return clauses
 
-    # Return the attribute constraints
-    return {
-        'Security': security_threshold,
-        'Intrusiveness': intrusiveness_threshold,
-        'Privacy': privacy_threshold,
-        'Accuracy': accuracy_threshold
-    }
+def run_test_case(factors, constraints, expected_result):
+    selected_factors = solve_with_constraints(factors, constraints)
+    print(f"Input factors: {factors}")
+    print(f"Input constraints: {constraints}")
+    print(f"Expected result: {expected_result}")
+    print(f"Actual result: {selected_factors}")
+    print("Test passed:", selected_factors == expected_result)
+    print()
 
+def main():
+    # Load test cases from the JSON file
+    with open("test_cases.json") as file:
+        test_cases = json.load(file)
 
-if __name__ == '__main__':
-    # Example factor modules
-    factor_modules = ['facial_recognition', 
-                      'fingerprint', 
-                      'password', 
-                      'geolocation', 
-                      'battery_information',
-                      'ip_address',
-                      'network_flow_statistics',
-                      'timezone',
-                      'screen_frame_resolution']
+    for i, test_case in enumerate(test_cases, start=1):
+        print(f"Running Test Case {i}:")
+        run_test_case(test_case["factors"], test_case["constraints"], test_case["expected_result"])
 
-    # Run the evaluation and selection process
-    solutions = evaluate_and_select_factors("variables.json", factor_modules, determine_attribute_constraints)
-    print("Solutions:", solutions)
+if __name__ == "__main__":
+    main()

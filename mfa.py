@@ -1,6 +1,6 @@
 import json
 import importlib
-from sat import find_factors
+from sat_updated import solve_with_constraints, load_constraints
 
 # Function to dynamically load and evaluate factors from Python files
 def load_and_evaluate_factors(factor_modules, env, device, context):
@@ -14,7 +14,7 @@ def load_and_evaluate_factors(factor_modules, env, device, context):
 
 
 # Function that integrates the dynamic loading and SAT solver
-def evaluate_and_select_factors(json_file, factor_modules, attribute_constraints_function, ):
+def evaluate_and_select_factors(json_file, factor_modules):
     """
     Evaluate the factor functions based on environment, device, and context variables from a JSON file,
     then pass the values into the SAT solver to find suitable factor combinations.
@@ -36,7 +36,10 @@ def evaluate_and_select_factors(json_file, factor_modules, attribute_constraints
     context = data['context']
     factors = load_and_evaluate_factors(factor_modules, environment, device, context)
 
-    attribute_constraints = attribute_constraints_function(environment,device,context)
-
+    # attribute_constraints = attribute_constraints_function(environment,device,context)
     # Use the SAT solver function to find valid factor combinations
-    return find_factors(factors, attribute_constraints)
+   # return find_factors(factors, attribute_constraints)
+    
+    rules = load_constraints("constraints.json")
+    result = solve_with_constraints(factors, rules)
+    return result

@@ -1,0 +1,59 @@
+[
+    {
+        "factors": {
+            "fingerprint": {"Security": 4, "Intrusiveness": 2, "Privacy": 3, "Accuracy": 4},
+            "facial_recognition": {"Security": 5, "Intrusiveness": 3, "Privacy": 2, "Accuracy": 4},
+            "screen_resolution": {"Security": 2, "Intrusiveness": 1, "Privacy": 5, "Accuracy": 3}
+        },
+        "constraints": [{"condition": "Security > 3", "implication": "Intrusiveness < 3"}],
+        "expected_result": ["fingerprint"]
+    },
+    {
+        "factors": {
+            "fingerprint": {"Security": 4, "Intrusiveness": 2, "Privacy": 3, "Accuracy": 4},
+            "facial_recognition": {"Security": 5, "Intrusiveness": 3, "Privacy": 2, "Accuracy": 4},
+            "screen_resolution": {"Security": 2, "Intrusiveness": 1, "Privacy": 5, "Accuracy": 3}
+        },
+        "constraints": [{"condition": "Privacy > 4", "implication": "Accuracy > 2"}],
+        "expected_result": ["screen_resolution"]
+    },
+    {
+        "factors": {
+            "fingerprint": {"Security": 4, "Intrusiveness": 2, "Privacy": 3, "Accuracy": 4},
+            "facial_recognition": {"Security": 5, "Intrusiveness": 3, "Privacy": 2, "Accuracy": 4},
+            "screen_resolution": {"Security": 2, "Intrusiveness": 1, "Privacy": 5, "Accuracy": 3}
+        },
+        "constraints": [
+            {"condition": "S > 3", "implication": "I < 3"},
+            {"condition": "P > 4", "implication": "A > 2"}
+        ],
+        "expected_result": ["fingerprint", "screen_resolution"]
+    },
+    {
+        "factors": {
+            "fingerprint": {"Security": 4, "Intrusiveness": 2, "Privacy": 3, "Accuracy": 4},
+            "facial_recognition": {"Security": 5, "Intrusiveness": 3, "Privacy": 2, "Accuracy": 4},
+            "screen_resolution": {"Security": 2, "Intrusiveness": 1, "Privacy": 5, "Accuracy": 3}
+        },
+        "constraints": [{"condition": "S > 5", "implication": "I < 1"}],
+        "expected_result": null
+    },
+    {
+        "factors": {
+            "fingerprint": {"Security": 4, "Intrusiveness": 2, "Privacy": 3, "Accuracy": 4},
+            "facial_recognition": {"Security": 5, "Intrusiveness": 3, "Privacy": 2, "Accuracy": 4},
+            "screen_resolution": {"Security": 2, "Intrusiveness": 1, "Privacy": 5, "Accuracy": 3}
+        },
+        "constraints": [{"condition": "", "implication": "A > 3"}],
+        "expected_result": ["fingerprint", "facial_recognition"]
+    },
+    {
+        "factors": {
+            "fingerprint": {"Security": 4, "Intrusiveness": 2, "Privacy": 3, "Accuracy": 4},
+            "facial_recognition": {"Security": 5, "Intrusiveness": 3, "Privacy": 2, "Accuracy": 4},
+            "screen_resolution": {"Security": 2, "Intrusiveness": 1, "Privacy": 5, "Accuracy": 3}
+        },
+        "constraints": [{"condition": "S > 3 and I < 3", "implication": "P > 2 and A > 3"}],
+        "expected_result": ["fingerprint"]
+    }
+]
